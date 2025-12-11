@@ -4,15 +4,36 @@
  */
 package GreenGain2;
 
+import java.util.Map;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author elizh
  */
 public class Leaderboard extends javax.swing.JFrame {
+public void updateLeaderboardDisplay() {
+    DefaultTableModel model = (DefaultTableModel) tblLeaderboard.getModel();
+    model.setRowCount(0); // Clear existing rows
 
-    /**
-     * Creates new form Leaderboard
-     */
+    if (DataModel.userPoints.isEmpty()) {
+        model.addRow(new Object[]{"⏳ Waiting", "No submissions yet", "", ""});
+        return;
+    }
+
+    DataModel.userPoints.entrySet().stream()
+        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+        .limit(10)
+        .forEach(entry -> {
+            String name = entry.getKey();
+            int points = entry.getValue();
+            double contributionKg = DataModel.userContributions.getOrDefault(name, 0.0); // Assuming you track kg separately
+            String status = "✅ Active"; // You can customize this based on rank or recent activity
+
+            model.addRow(new Object[]{status, name, contributionKg, points});
+        });
+}
+
     public Leaderboard() {
         initComponents();
     }
@@ -36,7 +57,7 @@ public class Leaderboard extends javax.swing.JFrame {
         LogOutBtn = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tblLeaderboard = new javax.swing.JTable();
         jLabel3 = new javax.swing.JLabel();
         jPanel5 = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -149,10 +170,10 @@ public class Leaderboard extends javax.swing.JFrame {
         jPanel3.setBackground(new java.awt.Color(0, 102, 51));
         jPanel3.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        jTable1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
-        jTable1.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
-        jTable1.setForeground(new java.awt.Color(0, 102, 51));
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tblLeaderboard.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        tblLeaderboard.setFont(new java.awt.Font("Segoe UI", 1, 12)); // NOI18N
+        tblLeaderboard.setForeground(new java.awt.Color(0, 102, 51));
+        tblLeaderboard.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -177,7 +198,7 @@ public class Leaderboard extends javax.swing.JFrame {
                 "Status", "Name", "Contribution (kg)", "Points Earned"
             }
         ));
-        jScrollPane1.setViewportView(jTable1);
+        jScrollPane1.setViewportView(tblLeaderboard);
 
         jLabel3.setFont(new java.awt.Font("Times New Roman", 3, 24)); // NOI18N
         jLabel3.setForeground(new java.awt.Color(255, 255, 255));
@@ -322,6 +343,6 @@ public class Leaderboard extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JTable tblLeaderboard;
     // End of variables declaration//GEN-END:variables
 }
